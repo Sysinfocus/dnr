@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<RootNamespace>DotNetRun</RootNamespace>
+		<AssemblyName>DotNetRun</AssemblyName>
+		<SignAssembly>False</SignAssembly>
+		<Title>Sysinfocus Automation - DotNetRun</Title>
+		<Authors>Sysinfocus Solutions Private Limited</Authors>
+		<Description>Run C# files just like scripting.</Description>
+		<Copyright>© 2025, Sysinfocus Solutions Private Limited</Copyright>
+		<PackageProjectUrl>https://github.com/Sysinfocus/dnr</PackageProjectUrl>
+		<PackageIcon>Sysinfocus-Logo.png</PackageIcon>
+		<PackageReleaseNotes>Check the release notes @ https://github.com/Sysinfocus/dnr</PackageReleaseNotes>
+		<AssemblyVersion>0.0.0.1</AssemblyVersion>
+		<FileVersion>0.0.0.1</FileVersion>
+		<Version>0.0.0.1-beta</Version>
+		<InformationalVersion>0.0.0.1-beta</InformationalVersion>
+		<PackageOutputPath>C:\NuGets</PackageOutputPath>
+		<PackAsTool>true</PackAsTool>
+		<ToolCommandName>dnr</ToolCommandName>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\..\..\..\Dropbox\Sysinfocus\Sysinfocus-Logo.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+</Project>
