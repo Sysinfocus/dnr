@@ -11,6 +11,12 @@ if (!File.Exists(file))
     Console.WriteLine($"File '{file}' not found.");
     return;
 }
+var ext = Path.GetExtension(file).ToLower();
+if (ext != ".cs")
+{
+    Console.WriteLine($"File '{file}' should be a valid C# file.");
+    return;
+}
 
 ReadCSFile(temporaryFolder, args[0]);
 
