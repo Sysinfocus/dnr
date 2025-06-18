@@ -13,7 +13,7 @@ dotnet tool install -g DotNetRun --prerelease
 ```
 
 ## Usage
-- Create a .cs file in any folder. For eg: `C:\Demo\Test.cs`
+- Create a .cs file in any folder. For eg: `C:\Demo\Test.cs` or use the **samples** folder where you have 3 files to test.
 - Write C# code in this file as shown in the example below:
   ```
   #:package Humanizer@2.*
