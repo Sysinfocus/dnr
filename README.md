@@ -1,6 +1,11 @@
 # DotNetRun
 A dotnet run like feature to script your C# code.
 
+## Release Notes
+### 0.0.0.3-beta
+- Supports multiple .cs files from the same folder
+- Pass arguments
+
 ## Setup
 Install `DotNetRun` as a dotnet tool
 ```
@@ -12,6 +17,7 @@ dotnet tool install -g DotNetRun --prerelease
 - Write C# code in this file as shown in the example below:
   ```
   #:package Humanizer@2.*
+  #:import *.cs
   
   using Humanizer;
   
@@ -34,6 +40,7 @@ dotnet tool install -g DotNetRun --prerelease
   
   Console.WriteLine();
   ```
+  `#:import` you can pass a single file like `#:import Example.cs` or all files in the folder with `#:import *.cs`
 - You run now run this file as follow
   ```
   dnr .\Test.cs
