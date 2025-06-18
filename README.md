@@ -41,7 +41,7 @@ dotnet tool install -g DotNetRun --prerelease
   Console.WriteLine();
   ```
   `#:import` you can pass a single file like `#:import Example.cs` or all files in the folder with `#:import *.cs`
-- You run now run this file as follow
+- You can now run this file as follow
   ```
   dnr .\Test.cs
   ```
