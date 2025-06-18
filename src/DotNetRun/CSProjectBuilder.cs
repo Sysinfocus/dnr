@@ -66,7 +66,7 @@ internal static class CSProjectBuilder
                         FileName = "dotnet",
                         Arguments = $"add package {package} --project ./{projectName}"
                     };
-                    Process.Start(addPackage);
+                    Process.Start(addPackage)?.WaitForExit();
                 }
             }
             else if (line.StartsWith("#:import"))
@@ -107,7 +107,7 @@ internal static class CSProjectBuilder
         {
             WorkingDirectory = path,
             FileName = "dotnet",
-            Arguments = $"run -v q {args} --project ./{projectName}"
+            Arguments = $"run -v q {passArgs} --project ./{projectName}"
         };
         Process.Start(runProject)?.WaitForExit();
     }

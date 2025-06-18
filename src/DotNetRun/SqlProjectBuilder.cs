@@ -5,7 +5,7 @@ namespace DotNetRun;
 
 internal static class SqlProjectBuilder
 {
-    internal static async Task Build(string[] args)
+    internal static async Task Build(string[] args, CancellationToken cancellationToken = default)
     {
         var path = Common.GetTemporaryFolder();
         var projectFile = args[0];
@@ -40,7 +40,7 @@ internal static class SqlProjectBuilder
                 FileName = "dotnet",
                 Arguments = $"new console -n {projectName}"
             };
-            Process.Start(pi)?.WaitForExit();
+            await Process.Start(pi)!.WaitForExitAsync(cancellationToken);
         }
 
         var csprojContent = File.ReadAllText(csproj);
@@ -62,9 +62,7 @@ internal static class SqlProjectBuilder
                 var package = database.ToLower() switch
                 {
                     "sqlserver" => new Package("Microsoft.Data.SqlClient", ""),
-                    "mysql" => new Package("MySql.Data", ""),
-                    "mariadb" => new Package("MySqlConnector", ""),
-                    "postgresql" => new Package("Npgsql", ""),
+                    "postgres" => new Package("Npgsql", ""),
                     _ => new Package("Microsoft.Data.Sqlite", "")
                 };
 
@@ -78,7 +76,7 @@ internal static class SqlProjectBuilder
                         FileName = "dotnet",
                         Arguments = $"add package {package.Name} --project ./{projectName}"
                     };
-                    Process.Start(addPackage);
+                    Process.Start(addPackage)?.WaitForExit();
                 }
             }
             else if (!line.StartsWith("--") && line.Trim() != "")
@@ -87,39 +85,37 @@ internal static class SqlProjectBuilder
             }
         }
 
-        var content = $$"""
-        using Microsoft.Data.Sqlite;
-        
-        var connectionString = "{{connectionString}}";
-        using var connection = new SqliteConnection(connectionString);
-        connection.Open();
-
-        var sql = @"{{sb.ToString().Trim()}}";
-
-        using var command = new SqliteCommand(sql, connection);
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
+        var content = database switch
         {
-            for (int i = 0; i < reader.FieldCount; i++)
-            {
-                Console.Write($"{reader.GetName(i)}: {reader.GetValue(i)} ");
-            }
-            Console.WriteLine();
-        }
+            "sqlserver" => $"""
+                        {Common.SQLSERVER.Replace("{connectionString}", connectionString.Replace("\"", "'"))
+                            .Replace("{sb}", sb.ToString().Trim())};
+                        """,
+            "postgres" => $"""
+                        {Common.POSTGRES.Replace("{connectionString}", connectionString.Replace("\"", "'"))
+                            .Replace("{sb}", sb.ToString().Trim())};
+                        """,
+            _ => $"""
+                        {Common.SQLITE.Replace("{connectionString}", connectionString.Replace("\"", "'"))
+                            .Replace("{sb}", sb.ToString().Trim())};
+                        """,
+        };
 
-        connection.Close();
-        """;
+        await File.WriteAllTextAsync(programFile, content.Trim(), cancellationToken);
+        await Task.Delay(1000, cancellationToken);
 
-        File.WriteAllText(programFile, content.Trim());
-        await Task.Delay(1000);
-
-        Console.WriteLine($"Executing sql:\n\n{sb.ToString().Trim()}\n\n");
+        var oc = Console.ForegroundColor;
+        Console.WriteLine($"Executing sql:");
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"{sb.ToString().Trim()}");
+        Console.ForegroundColor = oc;
+        Console.WriteLine();
 
         var runProject = new ProcessStartInfo
         {
             WorkingDirectory = path,
             FileName = "dotnet",
-            Arguments = $"run -v q {args} --project ./{projectName}"
+            Arguments = $"run -v q {passArgs} --project ./{projectName}"
         };
         Process.Start(runProject)?.WaitForExit();
     }
