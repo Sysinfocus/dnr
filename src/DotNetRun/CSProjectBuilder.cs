@@ -52,7 +52,7 @@ internal static class CSProjectBuilder
         {
             if (line.StartsWith("#:package"))
             {
-                var package = line.Trim().Replace("#:package ", "").Split('@');
+                var package = line.Trim().Replace("#:package ", "").Split('@');                
                 packages.Add(new(package[0], package[1]));
 
                 if (!csprojContent.Contains($"Include=\"{package[0]}\"") &&
@@ -64,7 +64,7 @@ internal static class CSProjectBuilder
                         UseShellExecute = false,
                         CreateNoWindow = true,
                         FileName = "dotnet",
-                        Arguments = $"add package {package} --project ./{projectName}"
+                        Arguments = $"add package {package[0]} -v {package[1]} --project ./{projectName}"
                     };
                     Process.Start(addPackage)?.WaitForExit();
                 }
