@@ -2,6 +2,12 @@
 A dotnet run like feature to script your C# code and SQL (Sqlite, SqlServer and Postgres).
 
 ## Release Notes
+### 0.0.0.6-beta
+- Added usage message if not provided.
+  
+### 0.0.0.5-beta
+- Bug fixes
+  
 ### 0.0.0.4-beta
 - Now you can create and run .sql files directly
 - Supports Sqlite, Sql Server and Postgres
