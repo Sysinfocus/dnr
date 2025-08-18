@@ -52,41 +52,11 @@ internal static class CSProjectBuilder
         {
             if (line.StartsWith("#:package"))
             {
-                var package = line.Trim().Replace("#:package ", "").Split('@');                
-                packages.Add(new(package[0], package[1]));
-
-                if (!csprojContent.Contains($"Include=\"{package[0]}\"") &&
-                    !csprojContent.Contains($"Version=\"{package[1]}\""))
-                {
-                    var addPackage = new ProcessStartInfo
-                    {
-                        WorkingDirectory = path,
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        FileName = "dotnet",
-                        Arguments = $"add package {package[0]} -v {package[1]} --project ./{projectName}"
-                    };
-                    Process.Start(addPackage)?.WaitForExit();
-                }
+                AddPackage(path, projectName, csprojContent, packages, line);
             }
             else if (line.StartsWith("#:import"))
             {
-                var import = line.Trim().Replace("#:import ", "");
-                if (import.ToLower() == "*.cs")
-                {
-                    var files = Directory.GetFiles(Environment.CurrentDirectory, "*.cs", SearchOption.TopDirectoryOnly);
-                    foreach (var file in files)
-                    {
-                        if (Path.GetFileName(file) != Path.GetFileName(projectFile) && !imports.Any(i => i.File == file))
-                        {
-                            imports.Add(new(Path.GetFileName(file)));
-                        }
-                    }
-                }
-                else if (File.Exists(import))
-                {
-                    imports.Add(new(import));
-                }
+                ImportFiles(projectFile, imports, line);
             }
             else
             {
@@ -110,5 +80,45 @@ internal static class CSProjectBuilder
             Arguments = $"run -v q {passArgs} --project ./{projectName}"
         };
         Process.Start(runProject)?.WaitForExit();
+    }
+
+    private static void ImportFiles(string projectFile, HashSet<Import> imports, string line)
+    {
+        var import = line.Trim().Replace("#:import ", "");
+        if (import.Equals("*.cs", StringComparison.CurrentCultureIgnoreCase))
+        {
+            var files = Directory.GetFiles(Environment.CurrentDirectory, "*.cs", SearchOption.TopDirectoryOnly);
+            foreach (var file in files)
+            {
+                if (Path.GetFileName(file) != Path.GetFileName(projectFile) && !imports.Any(i => i.File == file))
+                {
+                    imports.Add(new(Path.GetFileName(file)));
+                }
+            }
+        }
+        else if (File.Exists(import))
+        {
+            imports.Add(new(import));
+        }
+    }
+
+    private static void AddPackage(string path, string projectName, string csprojContent, HashSet<Package> packages, string line)
+    {
+        var package = line.Trim().Replace("#:package ", "").Split('@');
+        packages.Add(new(package[0], package[1]));
+
+        if (!csprojContent.Contains($"Include=\"{package[0]}\"") &&
+            !csprojContent.Contains($"Version=\"{package[1]}\""))
+        {
+            var addPackage = new ProcessStartInfo
+            {
+                WorkingDirectory = path,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                FileName = "dotnet",
+                Arguments = $"add package {package[0]} -v {package[1]} --project ./{projectName}"
+            };
+            Process.Start(addPackage)?.WaitForExit();
+        }
     }
 }

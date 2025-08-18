@@ -1,6 +1,14 @@
 ﻿using DotNetRun;
 
-if (args.Length == 0) return;
+if (args.Length == 0)
+{
+    Console.WriteLine();
+    Console.WriteLine("For running C# file\nUsage: dnr [file.cs]");
+    Console.WriteLine();
+    Console.WriteLine("For running SQL file\nUsage: dnr [file.sql]");
+    Console.WriteLine();
+    return;
+}
 
 var file = args[0];
 
